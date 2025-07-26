@@ -1,5 +1,5 @@
 import { REST, Routes } from 'discord.js';
-import fs from 'node:fs'
+import fs, { mkdirSync } from 'node:fs'
 import path from 'node:path'
 
 const commands: any[] = [];
@@ -64,11 +64,17 @@ for (const commandCategory of commandCategories) {
 
 async function deployCommands(clientId: string, token: string, guildId?: string): Promise<void> {
     const rest = new REST().setToken(token);
-    const deployedCommandsPath = path.join(__dirname, '..', '..', 'cache', 'last-deployed.json');
-    console.log(deployedCommandsPath)
+    const cachePath = path.join(__dirname, '..', '..', 'cache');
+    
+    if(!fs.existsSync(cachePath)){
+        fs.mkdirSync(cachePath);
+    }
+    
+    const deployedCommandsPath = path.join(cachePath, 'last-deployed.json');
 
     return new Promise((resolve, reject) => {
         let lastDeployed: any[] = [];
+        
         fs.readFile(deployedCommandsPath, 'utf-8', (err, fileContent) => {
             if (!err && fileContent) {
                 try {

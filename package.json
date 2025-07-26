@@ -13,7 +13,7 @@
     "@types/node": "^20.14.12",
     "concurrently": "^9.1.2",
     "nodemon": "^3.1.4",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   },
   "name": "osbot",
   "description": "<b>It is a prefix based Discord Bot Created in Node.js</b>",

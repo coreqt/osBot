@@ -50,7 +50,7 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('ping')
 		.setDescription('Replies with Pong!'),
-	async execute(interaction: ChatInputCommandInteraction, client: Client) {
+	execute: async(interaction: ChatInputCommandInteraction, client: Client) => {
 		if (!interaction.isChatInputCommand()) return;
 
 		let pingEmbed = new EmbedBuilder()

@@ -7,7 +7,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('invite')
         .setDescription(`Send's Bot Invite Link`),
-    async execute(interaction: ChatInputCommandInteraction, client: Client) {
+    execute: async (interaction: ChatInputCommandInteraction, client: Client) => {
         if (!interaction.isChatInputCommand() || !primaryClr) return;
         let embed = new EmbedBuilder();
         embed.setColor(primaryClr);
