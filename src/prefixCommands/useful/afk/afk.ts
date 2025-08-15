@@ -98,6 +98,7 @@ module.exports = {
                 afkGuildId: message.guild.id,
                 hasChangedNick: changeNick
             });
+            // comment
 
             await newDoc.save();
         } catch (err) {
