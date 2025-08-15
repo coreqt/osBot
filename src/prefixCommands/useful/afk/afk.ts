@@ -25,9 +25,6 @@ module.exports = {
             changeNick = true;
 
 
-            console.log(`1: ${message.member?.roles.highest.position}`);
-            console.log(`2: ${message.guild.members.resolve(client.user).roles.highest.position}`);
-
             if (message.member?.roles.highest.position > message.guild.members.resolve(client.user).roles.highest.position) {
                 changeNick = false;
 
