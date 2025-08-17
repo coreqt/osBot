@@ -27,7 +27,7 @@ module.exports = {
     }
 }
 
-async function afkCheckOnEveryMessage(message: Message, client: Client) {
+async function afkCheckOnEveryMessage(message: Message, client: Client): Promise<void> {
     if (!message) return;
     if (message.author.bot) return;
     const userid = message.author.id;
@@ -66,7 +66,7 @@ async function afkCheckOnEveryMessage(message: Message, client: Client) {
     return;
 }
 
-async function afkCheckOnMentionMessage(message: Message) {
+async function afkCheckOnMentionMessage(message: Message): Promise<void> {
     if (!message) return;
     if (message.author.bot) return;
     const messageString = message.content;
@@ -117,7 +117,7 @@ async function afkCheckOnMentionMessage(message: Message) {
             let titleStr = `${name} is AFK`
 
             if (queryResult.reason != 'none') {
-                titleStr = `${name} is ${reason}`
+                titleStr = `${name} is AFK, Reason: ${reason}`
             }
 
             embed.setAuthor({ name: titleStr, iconURL: validateIconURL(userData.avatarURL()) });
@@ -150,7 +150,7 @@ async function afkCheckOnMentionMessage(message: Message) {
 }
 
 
-async function afkCheckOnRepliedMessage(message: Message) {
+async function afkCheckOnRepliedMessage(message: Message):Promise<void> {
     if (!message) return;
     if (message.author.bot) return;
     if (message?.reference?.messageId) {
@@ -190,7 +190,7 @@ async function afkCheckOnRepliedMessage(message: Message) {
                 let titleStr = `${name} is AFK`;
                 // embed.setTitle(`From <t:${queryResult.afkStartTime}:${TimestampStyles.LongTime}>(<t:${queryResult.afkStartTime}:${TimestampStyles.RelativeTime}>)`);
                 if (queryResult.reason != 'none') {
-                    titleStr = `${name} is ${reason}`
+                    titleStr = `${name} is AFK, Reason: ${reason}`
                 }
                 embed.setAuthor({ name: titleStr, iconURL: validateIconURL(userData.avatarURL()) });
                 // embed.setImage('https://c.tenor.com/w4wGt0MgpjMAAAAd/tenor.gif')
