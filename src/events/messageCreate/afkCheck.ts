@@ -37,13 +37,13 @@ module.exports = {
                 })
 
             } else { // afk user was pinged multiple times by other user
-                Embed.setDescription(`Welcome Back! You were AFK From <t:${afkDoc.afkStartTime}:${TimestampStyles.ShortTime}> & you're Pinged ${afkDoc.pingedBy.length} Time(s)`);
+                Embed.setDescription(`Welcome Back! You were AFK From <t:${afkDoc.afkStartTime}:${TimestampStyles.ShortTime}> & you were pinged by`);
 
                 for (let i = 0; i < afkDoc.pingedBy.length; i++) { // Adding multiple fields for 
 
                     Embed.addFields({
-                        name: `You were pinged by @${pingedByArr[i].username}`,
-                        value: `[Click Here](https://discord.com/channels/@me/${pingedByArr[i].channelId}/${pingedByArr[i].messageId}) To See Message`,
+                        name: `@${pingedByArr[i].username} - ${unixToRelativeTime(pingedByArr[i].timestamp)}`,
+                        value: `[Click Here](https://discord.com/channels/@me/${pingedByArr[i].channelId}/${pingedByArr[i].messageId}) To See`,
                         inline: true
                     })
                 }
@@ -248,8 +248,6 @@ async function setDefaultUserName(message: Message, queryResult: AfkDoc, client:
             if (!guild) return;
 
             let member = guild.members.cache.get(message.author.id);
-
-
             await member?.setNickname(queryResult.oldGuildNickname);
         }
 
