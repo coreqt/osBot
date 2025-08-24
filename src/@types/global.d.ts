@@ -1,4 +1,4 @@
-import { Client } from "discord.js";
+import { Client, Snowflake, User } from "discord.js";
 
 export { }
 
@@ -16,11 +16,31 @@ declare global {
     interface _Client extends Client {
         prefixCommands: Collection<string, Command>;
         slashCommands: Collection<string, Command>;
-        
+
         // To be assigned by eventHandler
         handleEvents: () => Promise<void>;
         handlePrefixCommands: () => Promise<void>;
         handleSlashCommands: () => Promise<void>;
     }
+
+
+
+    interface AfkDoc {
+        userId: string;
+        reason: string | undefined;
+        afkStartTime: number | 0;
+        pingedBy: Array<PingedBy>
+        hasChangedNick: boolean;
+        oldGuildNickname: string | null;
+        afkGuildId: string;
+    }
+
+    interface PingedBy {
+        username: Snowflake;
+        channelId: Snowflake;
+        messageId: Snowflake;
+        timestamp: number
+    }
+
 
 }

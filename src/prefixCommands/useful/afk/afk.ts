@@ -1,8 +1,7 @@
 import { Message, EmbedBuilder, TimestampStyles, Client, PermissionsBitField } from "discord.js";
 import 'dotenv/config';
-import { boolean } from "mathjs";
+import afkModel from "../../../model/afkModel";
 
-var afkDoc = require('../../../model/afkModel.js');
 var prefix = process.env.PREFIX || "o!";
 
 module.exports = {
@@ -17,8 +16,8 @@ module.exports = {
         const userid = message.author.id;
 
 
-        const clientPerms = message.guild.members.me.permissions;
         let changeNick = false;
+        const clientPerms = message.guild.members.me.permissions;
 
 
         if (clientPerms.has("ManageNicknames")) {
@@ -90,15 +89,14 @@ module.exports = {
 
 
         try {
-            await afkDoc.deleteMany({ userId: userid });
-            const newDoc = new afkDoc({
+            await afkModel.deleteMany({ userId: userid });
+            const newDoc = new afkModel({
                 userId: userid,
                 reason: _reason, afkStartTime: timeStamp,
-                oldServerNickname: message.member.nickname,
+                oldGuildNickname: message.member.nickname,
                 afkGuildId: message.guild.id,
                 hasChangedNick: changeNick
             });
-            // comment
 
             await newDoc.save();
         } catch (err) {
@@ -135,7 +133,7 @@ module.exports = {
 
             if (message.author.id === message.guild.ownerId) {
 
-                const note = await message.reply(`❌  I can't change the server owner's nickname to mark AFK.`);
+                const note = await message.reply(`❌ I can't change the server owner's nickname to mark AFK.`);
                 setTimeout(() => note.delete(), 7000);
 
             } else {
@@ -152,6 +150,7 @@ module.exports = {
 
 
 }
+
 
 function isValidAscii(str: string): boolean {
     for (let i = 0; i < str.length; i++) {

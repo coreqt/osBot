@@ -1,24 +1,26 @@
 import { Message } from "discord.js";
-import { errorLog } from "../../../utils/sendLog";
+import unixToRelativeTime from "../../../utils/unixToRelativeTime";
 import 'dotenv/config'
-let prefix = process.env.PREFIX || "o!";
-var config = require('../../../../config.json');
 var developerId = process.env.DEV_ID;
 module.exports = {
-    structure:{
-        name:"test",
+    structure: {
+        name: "test",
         description: "only Developer can use this",
-        usage:".."
+        usage: ".."
     },
-    execute: async(message: Message)=>{
+    execute: async (message: Message) => {
+        if (!message || !message.channel.isSendable()) return;
+        
+        if (message.author.id == developerId) {
+            
+            
+            message.reply(`${unixToRelativeTime(1755981193451)}`);
+            // 1755978546
+            // console.log(TimestampStyles.RelativeTime)
 
-        if(message.author.id == developerId){
-           
-        console.log(message.reference)
 
-
-        }else{
-            if(!message.channel.isSendable()) return;
+        } else {
+            if (!message.channel.isSendable()) return;
 
             message.channel.send('https://tenor.com/view/my-honest-reaction-gif-10673976111485284091');
             message.channel.send('only developer can use this command!')
@@ -26,7 +28,7 @@ module.exports = {
 
 
         // Testing for Developer
-        
+
         // message.channel.send(`${message.channel.nsfw}`);
     },
 

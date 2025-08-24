@@ -1,70 +1,70 @@
-import { EmbedBuilder, User, TimestampStyles, Message, Client, Guild, GuildMessageManager, Role, ColorResolvable } from "discord.js";
+// Imports
+import { EmbedBuilder, User, TimestampStyles, Message, Client, TimestampStylesString} from "discord.js";
 import { errorLog } from "../../utils/sendLog";
-import 'dotenv/config'
+import 'dotenv/config';
+import afkModel from "../../model/afkModel";
+import unixToRelativeTime from "../../utils/unixToRelativeTime";
 
-var afkDoc = require('../../model/afkModel');
 var getUserById = require('../../utils/getUserById');
 
 const prefix: any = process.env.PREFIX || "o!";
 
 module.exports = {
     execute: async (message: Message, client: Client) => {
-
+        // checking if message object is empty of whether the msg was sent by a bot.
         if (!message) return;
         if (message.author.bot) return;
-        const userid = message.author.id;
-        var queryResult = await afkDoc.findOne({ userId: userid });
 
-        if (message.content.toLowerCase().startsWith(`${prefix.toLocaleLowerCase()}afk`) && queryResult) {
-            safeReply(message, "You are already AFK, chill.")
+        // Fetching message author's document from the database.
+        const authorId = message.author.id;
+        const afkDoc = await afkModel.findOne({ userId: authorId })
+        
+        if (afkDoc && afkDoc.userId == authorId) { // User who sent messages was afk
+            
+            // Defining Embed variable
+            const embedColor: any = process.env.PRIMARY_EMBED_COLOR || "#FFC5D3"
+            const Embed = new EmbedBuilder();
+            Embed.setColor(embedColor);
+            Embed.setAuthor({ name: `Yo ${message.author.globalName}` });
+            let pingedByArr: PingedBy[] = afkDoc.pingedBy;
+
+            if (pingedByArr.length == 0) { // If afk user wasnt pinged by anyone while he/she was afk.
+
+                Embed.addFields({
+                    name: `Welcome Back!`,
+                    value: `You were AFK From <t:${afkDoc.afkStartTime}:R> :3`,
+                    inline: false
+                })
+
+            } else { // afk user was pinged multiple times by other user
+                Embed.setDescription(`Welcome Back! You were AFK From <t:${afkDoc.afkStartTime}:${TimestampStyles.ShortTime}> & you're Pinged ${afkDoc.pingedBy.length} Time(s)`);
+
+                for (let i = 0; i < afkDoc.pingedBy.length; i++) { // Adding multiple fields for 
+
+                    Embed.addFields({
+                        name: `You were pinged by @${pingedByArr[i].username}`,
+                        value: `[Click Here](https://discord.com/channels/@me/${pingedByArr[i].channelId}/${pingedByArr[i].messageId}) To See Message`,
+                        inline: true
+                    })
+                }
+
+
+            }
+
+            setDefaultUserName(message, afkDoc, client) // Setting Deafult username
+            await safeReply(message, { embeds: [Embed] }); // sending embed
+            await afkDoc.deleteOne(); // Delete's the document from the database.
+            return;
+        }else{ // If message author was not afk
+
+            afkCheckOnMentionMessage(message); // Checks and replies whether the message string contains
+            afkCheckOnRepliedMessage(message);
             return;
         }
-
-        afkCheckOnEveryMessage(message, client);
-        afkCheckOnMentionMessage(message);
-        afkCheckOnRepliedMessage(message);
-        return;
     }
+
 }
 
-async function afkCheckOnEveryMessage(message: Message, client: Client): Promise<void> {
-    if (!message) return;
-    if (message.author.bot) return;
-    const userid = message.author.id;
-    var queryResult = await afkDoc.findOne({ userId: userid });
-    if (queryResult == null) return;
-
-    const embedColor: any = process.env.PRIMARY_EMBED_COLOR || "#FFC5D3"
-
-    if (queryResult.userId == userid) {
-        const Embed = new EmbedBuilder();
-        Embed.setColor(embedColor);
-        Embed.setAuthor({ name: `Yo ${message.author.globalName}` });
-        if (queryResult.pingedBy.length == 0) {
-            // Embed.setDescription(`You were AFK From <t:${queryResult.afkStartTime}:R>`)
-            Embed.addFields({
-                name: `Welcome Back!`,
-                value: `You were AFK From <t:${queryResult.afkStartTime}:R> :3`,
-                inline: false
-            })
-
-        } else {
-            Embed.setDescription(`Welcome Back! You were AFK From <t:${queryResult.afkStartTime}:${TimestampStyles.ShortTime}> & you're Pinged ${queryResult.pingedBy.length} Time(s)`);
-            for (let i = 0; i < queryResult.pingedBy.length; i++) {
-                Embed.addFields({
-                    name: `By @${queryResult.pingedBy[i].username}`,
-                    value: `[Click Here](https://discord.com/channels/@me/${queryResult.pingedBy[i].channelId}/${queryResult.pingedBy[i].messageId}) To See Message`,
-                    inline: true
-                })
-            }
-        }
-
-        setDefaultUserName(message, queryResult, client);
-        await safeReply(message, { embeds: [Embed] });
-        await afkDoc.deleteMany({ userId: userid });
-    }
-    return;
-}
 
 async function afkCheckOnMentionMessage(message: Message): Promise<void> {
     if (!message) return;
@@ -83,7 +83,7 @@ async function afkCheckOnMentionMessage(message: Message): Promise<void> {
 
     for (let userid of userIds) {
         try {
-            var queryResult = await afkDoc.findOne({ userId: userid });
+            var queryResult = await afkModel.findOne({ userId: userid });
             if (!queryResult) {
                 throw new Error("There was an Error while retreving data from database")
             }
@@ -92,7 +92,7 @@ async function afkCheckOnMentionMessage(message: Message): Promise<void> {
         }
         if (queryResult == null) return;
 
-        if (queryResult.length < 1) continue;
+        // if (queryResult.length < 1) continue;
         if (!queryResult.userId) continue;
 
 
@@ -110,14 +110,17 @@ async function afkCheckOnMentionMessage(message: Message): Promise<void> {
                 name = userData.username;
             }
 
+
             const embedColor: any = process.env.PRIMARY_EMBED_COLOR || "#FFC5D3"
+
+            const relativeTime = unixToRelativeTime(queryResult.afkStartTime);
 
             embed.setColor(embedColor);
 
-            let titleStr = `${name} is AFK`
+            let titleStr = `${name} is AFK - ${relativeTime}`;
 
-            if (queryResult.reason != 'none') {
-                titleStr = `${name} is AFK, Reason: ${reason}`
+            if (queryResult.reason) {
+                titleStr = `${name} is AFK. Reason: ${reason} - ${relativeTime}`;
             }
 
             embed.setAuthor({ name: titleStr, iconURL: validateIconURL(userData.avatarURL()) });
@@ -131,15 +134,17 @@ async function afkCheckOnMentionMessage(message: Message): Promise<void> {
             const rawCurrentTimeStamp: number = message.createdTimestamp;
             const currentTimeStamp: number = (rawCurrentTimeStamp / 1000) | 0;
 
+ 
+            let pingedBy: PingedBy = {
+                username: message.author.username,
+                channelId: message.channel.id,
+                messageId: message.id,
+                timestamp: currentTimeStamp,
+            }
 
-            await afkDoc.findOneAndUpdate({ userId: userid }, {
+            await afkModel.findOneAndUpdate({ userId: userid }, {
                 $push: {
-                    pingedBy: {
-                        username: message.author.username,
-                        channelId: message.channel.id,
-                        messageId: message.id,
-                        timestamp: currentTimeStamp,
-                    }
+                    pingedBy: pingedBy
                 }
             })
         } else {
@@ -150,7 +155,7 @@ async function afkCheckOnMentionMessage(message: Message): Promise<void> {
 }
 
 
-async function afkCheckOnRepliedMessage(message: Message):Promise<void> {
+async function afkCheckOnRepliedMessage(message: Message): Promise<void> {
     if (!message) return;
     if (message.author.bot) return;
     if (message?.reference?.messageId) {
@@ -158,7 +163,7 @@ async function afkCheckOnRepliedMessage(message: Message):Promise<void> {
         let queryResult;
         try {
             msg = await message.channel.messages.fetch(message.reference.messageId);
-            queryResult = await afkDoc.findOne({ userId: msg.author.id });
+            queryResult = await afkModel.findOne({ userId: msg.author.id });
         } catch (err) {
             errorLog(err, message);
             console.log(err);
@@ -167,7 +172,7 @@ async function afkCheckOnRepliedMessage(message: Message):Promise<void> {
 
         if (queryResult == null || !msg || !queryResult) return;
         if (queryResult.reason) {
-            if (queryResult.length < 1) return;
+            // if (queryResult.length < 1) return;
 
             const reason = queryResult.reason;
 
@@ -187,10 +192,11 @@ async function afkCheckOnRepliedMessage(message: Message):Promise<void> {
                 }
                 const embedColor: any = process.env.PRIMARY_EMBED_COLOR || "#FFC5D3"
                 embed.setColor(embedColor);
-                let titleStr = `${name} is AFK`;
+                const relativeTime = `${unixToRelativeTime(queryResult.afkStartTime)}`
+                let titleStr = `${name} is AFK - ${relativeTime}`;
                 // embed.setTitle(`From <t:${queryResult.afkStartTime}:${TimestampStyles.LongTime}>(<t:${queryResult.afkStartTime}:${TimestampStyles.RelativeTime}>)`);
                 if (queryResult.reason != 'none') {
-                    titleStr = `${name} is AFK, Reason: ${reason}`
+                    titleStr = `${name} is AFK, Reason: ${reason} - ${relativeTime}`
                 }
                 embed.setAuthor({ name: titleStr, iconURL: validateIconURL(userData.avatarURL()) });
                 // embed.setImage('https://c.tenor.com/w4wGt0MgpjMAAAAd/tenor.gif')
@@ -203,7 +209,7 @@ async function afkCheckOnRepliedMessage(message: Message):Promise<void> {
     return;
 }
 
-async function setDefaultUserName(message: Message, queryResult: any, client: Client,): Promise<void> {
+async function setDefaultUserName(message: Message, queryResult: AfkDoc, client: Client,): Promise<void> {
     if (!message || !message.guild || !message.channel.isSendable()) return;
 
     const guildMembers = message.guild.members;
@@ -244,13 +250,12 @@ async function setDefaultUserName(message: Message, queryResult: any, client: Cl
             let member = guild.members.cache.get(message.author.id);
 
 
-            await member?.setNickname(queryResult.oldServerNickname);
+            await member?.setNickname(queryResult.oldGuildNickname);
         }
 
     } catch (err) {
         const note = await message.reply(`Unable to change Nickname back to normal. Please try to put my role Above yours to make it workable.`);
         setTimeout(() => note.delete(), 7000);
-
     }
 
 

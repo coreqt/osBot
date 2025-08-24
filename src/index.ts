@@ -179,6 +179,6 @@ process.on('unhandledRejection', async (reason: any, promise: Promise<any>) => {
 });
 
 main().catch(error => {
-    console.error("Error during bot initialization or runtime:", error);
+    console.error("Error during bot initialization or runtime:3", error);
     process.exit(1);
 });

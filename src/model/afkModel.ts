@@ -1,37 +1,36 @@
-import { boolean } from "mathjs";
+import {Schema, model} from 'mongoose';
 
-var mongoose = require('mongoose');
 
-const afkSchema = new mongoose.Schema({
+const afkSchema = new Schema<AfkDoc>({
     userId: {
-        type: String, required: [true]
+        type: String, required: [true, 'userId is Required']
     },
     reason: {
         type: String,
         maxLength: 220,
-        default: "none"
+        default: undefined,
     },
     afkStartTime: {
-        type: String,
+        type: Number,
         default: 0,
     },
     pingedBy: {
-        type: Array,
+        type: [],
         default: []
     },
     hasChangedNick: {
-        type: boolean,
+        type: Boolean,
         default: false
     },
-    oldServerNickname: {
+    oldGuildNickname: {
         type: String,
         deafult: null
     },
     afkGuildId: {
         type: String,
-        required: [true]
+        required: [true, 'afkGuildId is Required']
     }
 });
 
-var afkModel = mongoose.model('afkModel', afkSchema);
-module.exports = afkModel; 
+const afkModel = model<AfkDoc>('afkModel', afkSchema);
+export default afkModel;
