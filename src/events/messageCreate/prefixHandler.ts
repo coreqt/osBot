@@ -1,4 +1,4 @@
-import { Message, EmbedBuilder, Client, Channel, GuildChannel, User } from "discord.js";
+import { Message, EmbedBuilder, Client, Channel, PermissionResolvable, User, PermissionsBitField } from "discord.js";
 import 'dotenv/config';
 
 var guildDoc = require("../../model/guildModel");
@@ -10,7 +10,6 @@ module.exports = {
     execute: async (message: Message, client: _Client) => {
         var prefix = null;
         if (!message || message.author.bot || !message.channel.isSendable() || message.channel.isDMBased() || !message.guild || !client.user?.id) return;
-
         const guildId = message.guild.id;
         const guildName = message.guild.name;
         const authorId = message.author.id;
@@ -20,6 +19,20 @@ module.exports = {
         const clientPerms = channel.permissionsFor(client.user.id);
         if (!clientPerms) {
             throw new Error("Client Permissions are Null");
+        }
+
+
+        let missingPerms = checkMissingPerms(clientPerms, ["EmbedLinks", "ManageMessages", "ManageNicknames", "ManageWebhooks", "ReadMessageHistory", "SendMessages", "ViewChannel"]);
+
+        if (missingPerms.length > 0) {
+            try {
+                let user = await client.users.fetch(authorId, { cache: false });
+                await user.send(`# I don't have following permissoins in \`${guildName}\` Server\n\`\`\`${missingPerms}\`\`\`\n-# IF YOU THINK THIS IS A BUG PLEASE OPEN AN ISSUE ON OUR [GITHUB](https://github.com/notcorefr/osBot) PAGE`);
+
+            } catch (error) {
+                message.channel.send(`# I don't have following permissoins in \`${guildName}\` Server\n\`\`\`${missingPerms}\`\`\`\n-# IF YOU THINK THIS IS A BUG PLEASE OPEN AN ISSUE ON OUR [GITHUB](https://github.com/notcorefr/osBot) PAGE`)
+            }
+            return;
         }
 
         if (msgContent == `<@${process.env.CLIENT_ID}>`) {
@@ -94,20 +107,6 @@ module.exports = {
         const msgCommand = args.shift().toLowerCase();
 
 
-        if (!clientPerms.has("SendMessages")) {
-
-            client.users.fetch(authorId, { cache: false })
-                .then((user: User) => {
-                    user.send(`I don't ahve permissoins to send messages in ${guildName}`);
-                })
-
-            return;
-        };
-
-        if (!clientPerms.has("EmbedLinks")) {
-            message.channel.send(`❌I don't Have Permissions To Send EmbedLinks!`);
-            return;
-        };
 
 
         const now = Date.now();
@@ -134,15 +133,15 @@ module.exports = {
         try {
             await command.execute(message, client, args,)
         } catch (err: any) {
-            const errChannelId= process.env.ERROR_LOG_CHANNEL_ID;
-    
-            if(!errChannelId){
+            const errChannelId = process.env.ERROR_LOG_CHANNEL_ID;
+
+            if (!errChannelId) {
                 throw new Error("ERROR_LOG_CHANNEL_ID is not provided in .env file!")
             }
 
             const channel = client.channels.cache.get(errChannelId);
             // const channel = client.channels.fetch(config.log.errorChannelId);
-            if(!channel || !channel.isSendable()) return;
+            if (!channel || !channel.isSendable()) return;
             channel.send(`
             Error: ${err.toString()}
             Stack: ${err.stack}
@@ -159,13 +158,13 @@ module.exports = {
 
             const logChannelId = process.env.COMMAND_EXECUTION_LOG_CHANNEL_ID;
 
-            if(!logChannelId){
+            if (!logChannelId) {
                 throw new Error('COMMAND_EXECUTION_LOG_CHANNEL_ID is not provided in .env file');
             }
 
 
-            const channel =  client.channels.cache.get(logChannelId);
-            if(!channel || !channel.isSendable()) throw new Error("Unable to Fetch executeChannel in prefixHandler.ts");
+            const channel = client.channels.cache.get(logChannelId);
+            if (!channel || !channel.isSendable()) throw new Error("Unable to Fetch executeChannel in prefixHandler.ts");
             const logEmbed = new EmbedBuilder()
                 .setColor('Green')
                 .setAuthor({ name: `${authorUsername}`, iconURL: validateIconURL(message.author.avatarURL()) })
@@ -198,4 +197,19 @@ function validateIconURL(url: string | null): string | undefined {
     } catch {
         return undefined;
     }
+}
+
+
+function checkMissingPerms(clientPerms: Readonly<PermissionsBitField>, requiredPerms: Array<PermissionResolvable>): Array<PermissionResolvable> {
+    let missingPerms: Array<PermissionResolvable> = [];
+
+    requiredPerms.forEach(perm => {
+        if (!clientPerms.has(perm)) {
+            missingPerms.push(perm)
+        }
+    });
+
+    return missingPerms
+
+
 }
