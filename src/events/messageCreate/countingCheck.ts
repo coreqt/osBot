@@ -1,4 +1,3 @@
-import { Channel } from "diagnostics_channel";
 import { Message, Client, GuildChannel, TextChannelType, GuildMessageManager, Webhook, TextChannel, ChannelType, NewsChannel, ClientUser } from "discord.js";
 import { evaluate } from "mathjs";
 import 'dotenv/config';
@@ -39,7 +38,7 @@ module.exports = {
             return;
         }
 
-        if (queryResult.lastNumber + 1 !== number) { // Checks fi number is correct
+        if (queryResult.lastNumber + 1 !== number) { // Checks if number is correct
             warn(message, `${author.username}, the next number is ${queryResult.lastNumber + 1}`);
             return;
         }
@@ -61,7 +60,7 @@ async function warn(message: Message, warningMessage: string): Promise<void> {
 
 async function processCorrectNumber(message: Message, client: Client, doc: typeof countingDoc): Promise<void> {
     if (!client.user ||message.channel.isDMBased() || !message.channel.isSendable() || !message.channel.isTextBased() || message.channel.isVoiceBased() || message.channel.isThread()) return;
-    const { author, channel, content } = message;
+    const { author, channel, content, member } = message;
     const bot = client.user;
 
 
@@ -77,9 +76,14 @@ async function processCorrectNumber(message: Message, client: Client, doc: typeo
         });
     }
 
+    let displayName = author.globalName;
+    if(member?.nickname){
+        displayName = member.nickname;
+    }
+
     await webhook.send({
         content,
-        username: author.globalName || author.username,
+        username: displayName ? `${displayName} (${author.username})` :  `${author.username}`,
         avatarURL: author.displayAvatarURL({ forceStatic: false, extension: "png" })
     });
 
@@ -87,7 +91,7 @@ async function processCorrectNumber(message: Message, client: Client, doc: typeo
     doc.lastUserId = author.id;
     await doc.save();
 
-    await message.channel.setTopic(`Count to your heart's content! by OS Bot! The next number is ${doc.lastNumber + 1}`);
+    await message.channel.setTopic(`Counting Channel By ${client.user.tag} bot. next number is ${doc.lastNumber + 1}`);
     return;
 }
 

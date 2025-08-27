@@ -209,7 +209,6 @@ function checkMissingPerms(clientPerms: Readonly<PermissionsBitField>, requiredP
         }
     });
 
-    return missingPerms
-
+    return missingPerms;
 
 }
