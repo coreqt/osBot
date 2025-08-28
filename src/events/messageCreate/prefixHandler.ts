@@ -20,33 +20,35 @@ module.exports = {
         if (!clientPerms) {
             throw new Error("Client Permissions are Null");
         }
-
-
-        let missingPerms = checkMissingPerms(clientPerms, ["EmbedLinks", "ManageMessages", "ManageNicknames", "ManageWebhooks", "ReadMessageHistory", "SendMessages", "ViewChannel"]);
-
-        if (missingPerms.length > 0) {
-            try {
-                let user = await client.users.fetch(authorId, { cache: false });
-                await user.send(`# I don't have following permissoins in \`${guildName}\` Server\n\`\`\`${missingPerms}\`\`\`\n-# IF YOU THINK THIS IS A BUG PLEASE OPEN AN ISSUE ON OUR [GITHUB](https://github.com/notcorefr/osBot) PAGE`);
-
-            } catch (error) {
-                message.channel.send(`# I don't have following permissoins in \`${guildName}\` Server\n\`\`\`${missingPerms}\`\`\`\n-# IF YOU THINK THIS IS A BUG PLEASE OPEN AN ISSUE ON OUR [GITHUB](https://github.com/notcorefr/osBot) PAGE`)
-            }
-            return;
-        }
-
+        
+        
+        
         if (msgContent == `<@${process.env.CLIENT_ID}>`) {
+            let missingPerms = checkMissingPerms(clientPerms, ["SendMessages", "EmbedLinks"]);
+
+            if (missingPerms.length > 0) {
+                try {
+                    let user = await client.users.fetch(authorId, { cache: false });
+                    await user.send(`# I don't have following permissoins in \`${guildName}\` Server\n\`\`\`${missingPerms}\`\`\`\n-# IF YOU THINK THIS IS A BUG PLEASE OPEN AN ISSUE ON OUR [GITHUB](https://github.com/notcorefr/osBot) PAGE`);
+            
+                } catch (error) {
+                    message.channel.send(`# I don't have following permissoins in \`${guildName}\` Server\n\`\`\`${missingPerms}\`\`\`\n-# IF YOU THINK THIS IS A BUG PLEASE OPEN AN ISSUE ON OUR [GITHUB](https://github.com/notcorefr/osBot) PAGE`)
+                }
+                return;
+            }
+
+
             let embed = new EmbedBuilder();
             embed.setDescription(`My default Prefix is \`${process.env.PREFIX}\`\nUse \`${process.env.PREFIX}help\`for help`);
             message.channel.send({ embeds: [embed] });
             return;
         }
-
+        
         var messageUserId = authorId;
         var userData = await userDoc.findOne({ userId: messageUserId });
-
+        
         if (!userData) {
-
+            
             const _userData = new userDoc({
                 userId: authorId,
                 joinedAt: new Date(),
@@ -55,7 +57,7 @@ module.exports = {
             await _userData.save();
             userData = await userDoc.findOne({ userId: messageUserId });
         }
-
+        
         var guildData: any = await guildDoc.findOne({ guildId: guildId });
         if (!guildData) {
             const _guildData = new guildDoc({
@@ -68,29 +70,29 @@ module.exports = {
         if (!Array.isArray(userData?.customPrefixes)) {
             userData.customPrefixes = [];
         }
-
+        
         if (!Array.isArray(guildData?.customPrefixes)) {
             if (guildData) {
                 guildData.customPrefixes = [];
             }
         }
-
+        
         // let prefixes = userData.customPrefixes.concat(guildData.customPrefixes, {prefix: `<@${config.clientId}>`});
         var prefixes = [];
         prefixes.push(`<@${process.env.CLIENT_ID}>`, process.env.PREFIX, 'os');
         for (let i = 0; i < userData.customPrefixes.length; i++) {
             prefixes.push(userData.customPrefixes[i].prefix);
         }
-
+        
         if (guildData) {
-
+            
             for (let i = 0; i < guildData.customPrefixes.length; i++) {
                 prefixes.push(guildData.customPrefixes[i].prefix);
             }
-
+            
         }
-
-
+        
+        
         for (let i = 0; i < prefixes.length; i++) {
             if (msgContent.toLowerCase().startsWith(prefixes[i].toLowerCase())) {
                 prefix = prefixes[i].toLowerCase();
@@ -99,56 +101,67 @@ module.exports = {
         if (!prefix) {
             return;
         }
-
+        
         if (!msgContent.toLowerCase().startsWith(prefix)) return;
-
+        
         var args: any;
         args = msgContent.slice(prefix.length).trim().split(/ +/);
         const msgCommand = args.shift().toLowerCase();
-
-
-
-
+        
+        
+        
+        
         const now = Date.now();
         const cooldownAmount = 3 * 1000; // 3 seconds cooldown
-
+        
         if (!cooldowns.has(authorId)) {
             cooldowns.set(authorId, now);
         } else {
             const expirationTime = cooldowns.get(authorId) + cooldownAmount;
-
+            
             if (now < expirationTime) {
                 const timeLeft = (expirationTime - now) / 1000;
                 return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${msgCommand}\` command.`);
             }
-
+            
             cooldowns.set(authorId, now);
         }
-
-
-
+        
+        
         const { prefixCommands } = client;
         const command = prefixCommands.get(msgCommand);
         if (!command) return;
         try {
+            let missingPerms = checkMissingPerms(clientPerms, ["EmbedLinks", "ManageMessages", "ManageNicknames", "ManageWebhooks", "ReadMessageHistory", "SendMessages", "ViewChannel"]);
+            
+            if (missingPerms.length > 0) {
+                try {
+                    let user = await client.users.fetch(authorId, { cache: false });
+                    await user.send(`# I don't have following permissoins in \`${guildName}\` Server\n\`\`\`${missingPerms}\`\`\`\n-# IF YOU THINK THIS IS A BUG PLEASE OPEN AN ISSUE ON OUR [GITHUB](https://github.com/notcorefr/osBot) PAGE`);
+            
+                } catch (error) {
+                    message.channel.send(`# I don't have following permissoins in \`${guildName}\` Server\n\`\`\`${missingPerms}\`\`\`\n-# IF YOU THINK THIS IS A BUG PLEASE OPEN AN ISSUE ON OUR [GITHUB](https://github.com/notcorefr/osBot) PAGE`)
+                }
+                return;
+            }
             await command.execute(message, client, args,)
         } catch (err: any) {
             const errChannelId = process.env.ERROR_LOG_CHANNEL_ID;
-
+            
             if (!errChannelId) {
                 throw new Error("ERROR_LOG_CHANNEL_ID is not provided in .env file!")
             }
-
+            
             const channel = client.channels.cache.get(errChannelId);
             // const channel = client.channels.fetch(config.log.errorChannelId);
             if (!channel || !channel.isSendable()) return;
             channel.send(`
-            Error: ${err.toString()}
-            Stack: ${err.stack}
-            Raw Message: ${msgContent}
-            Command: ${msgCommand}
-            Args: ${args.join(' ')}
-            Guild: ${guildName} | ${guildId}
+                Error: ${err.toString()}
+                Stack: ${err.stack}
+                Raw Message: ${msgContent}
+                Command: ${msgCommand}
+                Args: ${args.join(' ')}
+                Guild: ${guildName} | ${guildId}
             User: ${authorUsername} | ${authorId}
             `);
             console.log(err);

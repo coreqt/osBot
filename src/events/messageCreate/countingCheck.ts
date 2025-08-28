@@ -1,4 +1,4 @@
-import { Message, Client, GuildChannel, TextChannelType, GuildMessageManager, Webhook, TextChannel, ChannelType, NewsChannel, ClientUser } from "discord.js";
+import { Message, Client, Webhook, TextChannel, ChannelType, NewsChannel, ClientUser } from "discord.js";
 import { evaluate } from "mathjs";
 import 'dotenv/config';
 
@@ -84,7 +84,7 @@ async function processCorrectNumber(message: Message, client: Client, doc: typeo
     await webhook.send({
         content,
         username: displayName ? `${displayName} (${author.username})` :  `${author.username}`,
-        avatarURL: author.displayAvatarURL({ forceStatic: false, extension: "png" })
+        avatarURL: author.displayAvatarURL({ forceStatic: false, extension: "png" }),
     });
 
     doc.lastNumber += 1;
