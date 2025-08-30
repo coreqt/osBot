@@ -39,7 +39,6 @@ npm run build
 ```terminal
 npm start
 ```
-- Make sure to Change values in <B>config.json</b> as you like
 - And all set!
 
 
