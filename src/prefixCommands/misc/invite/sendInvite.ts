@@ -1,9 +1,8 @@
-import { Message } from "discord.js";
+import { Client, Message } from "discord.js";
 import 'dotenv/config';
-
+let primaryClr: any = process.env.PRIMARY_EMBED_COLOR;
 var {  EmbedBuilder } = require("discord.js");
 
-var config = require('../../../../config.json');
 var PREFIX = process.env.PREFIX || "o!";
 module.exports = {
     structure: {
@@ -11,12 +10,12 @@ module.exports = {
         Description: "Send's Bot Invite Links",
         usage:`${PREFIX}invite`
     },
-    execute: async(message:  Message)=>{
+    execute: async(message:  Message, client: Client)=>{
         if(!message.channel.isSendable())return;
 
         let embed = new EmbedBuilder();
-        embed.setColor(config.embedColor.primary);
-        embed.setDescription(`https://discord.com/oauth2/authorize?client_id=${config.clientId}`)
+        embed.setColor(primaryClr);
+        embed.setDescription(`https://discord.com/oauth2/authorize?client_id=${client.user?.id}`)
         message.channel.send({embeds: [embed]});
     }
 } 

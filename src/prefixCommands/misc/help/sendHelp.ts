@@ -3,8 +3,6 @@ import 'dotenv/config';
 
 var fs = require('node:fs');
 var path = require('node:path');
-var config = require('../../../../config.json');
-var userDoc = require('../../../model/userModel');
 var prefix = process.env.PREFIX || "o!";
 
 let actionsDir = path.join(__dirname, '..', '..', 'actions');

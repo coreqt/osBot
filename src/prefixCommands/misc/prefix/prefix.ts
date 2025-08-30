@@ -4,7 +4,6 @@ import 'dotenv';
 var { EmbedBuilder } = require('discord.js');
 var guildDoc = require('../../../model/guildModel');
 var userDoc = require('../../../model/userModel');
-// var config = require('../../../../config.json');
 var prefix = process.env.PREFIX || "o!";
 
 enum _prefixScope {

@@ -1,4 +1,4 @@
-import { Client, EmbedBuilder, Message, MessageFlagsBitField } from "discord.js";
+import { Client, EmbedBuilder, Message } from "discord.js";
 import 'dotenv/config';
 
 const client: Client = require('../index').client;

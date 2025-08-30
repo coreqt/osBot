@@ -3,7 +3,6 @@ import 'dotenv/config'
 let prefix = process.env.PREFIX || "o!";
 
 var { EmbedBuilder } = require('discord.js')
-var config = require('../../../../config.json');
 module.exports = {
     structure: {
         name: "userinfo",

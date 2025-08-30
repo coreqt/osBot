@@ -1,6 +1,5 @@
 import { errorLog } from "./sendLog";
 
-var client = require('../index').client;
 module.exports = {
     fetchAction: async (endpoint: string): Promise<object> => {
         try {

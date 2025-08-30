@@ -1,13 +1,11 @@
 import { Message } from "discord.js";
 
 var send = require('../../../utils/sendActionEmbed');
-
-var config = require('../../../../config.json');
 import 'dotenv/config'
 let prefix = process.env.PREFIX || "o!";
 
 module.exports = {
-    structure:{
+    structure: {
         name: "cuddle",
         description: "Cuddle Someone",
         usage: `${prefix}cuddle <mention>`

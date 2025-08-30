@@ -1,6 +1,6 @@
 // Imports
 import { Connection } from "mongoose";
-import { Client as DiscordClient, GatewayIntentBits, Collection, EmbedBuilder, TextChannel, Message } from 'discord.js';
+import { Client as DiscordClient, GatewayIntentBits, Collection, EmbedBuilder, TextChannel} from 'discord.js';
 
 import 'dotenv/config';
 import path from 'node:path';
@@ -67,6 +67,15 @@ async function connectToDatabase(connectionString: string): Promise<Connection> 
     }
 }
 
+
+/* 
+Main Function that will initialize everything.
+>checks for env variables
+>connects the datatabase
+>deploy commands
+>Loading and executing Handlers
+>Login
+*/
 async function main() {
     // Validate essential environment variables
     if (!token || !clientId ) {
@@ -115,6 +124,8 @@ async function main() {
     await client.login(token);
 }
 
+
+// Crash Handling
 process.on('uncaughtException', async (err: Error, origin: string) => {
     console.error('Uncaught Exception:', err);
     console.error('Origin:', origin);

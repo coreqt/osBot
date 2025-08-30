@@ -5,7 +5,7 @@ import 'dotenv/config';
 var { EmbedBuilder } = require('discord.js');
 var { fetchAction } = require('./fetchAction');
 // var {developerId, embedColor} = {process.env}
-const embedColor = process.env.PRIMARY_EMBED_COLOR;
+const embedColor = process.env.PRIMARY_EMBED_COLOR || "#FFC5D3";
 
 async function sendEmbed(message: Message, endpoint: string, title: string) {
     if(!message || !message.channel.isSendable()){
@@ -21,8 +21,6 @@ async function sendEmbed(message: Message, endpoint: string, title: string) {
             .setColor(embedColor)
             .setAuthor({ name: title, iconURL: message.author.displayAvatarURL(), url: gifData.url })
             .setImage(gifData.url);
-
-
         
         message.channel.send({ embeds: [Embed] });
     } catch (err: any) {

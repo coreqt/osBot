@@ -1,7 +1,5 @@
 import { Client, EmbedBuilder, Message } from "discord.js";
 import 'dotenv/config';
-
-const config = require('../../../../config.json');
 const prefix = process.env.PREFIX || "o!";
 
 // Define interfaces for better type safety with GitHub API responses

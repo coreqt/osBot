@@ -1,6 +1,4 @@
 var send = require('../../../utils/sendActionEmbed');
-var config = require('../../../../config.json');
-var getUserById = require('../../../utils/getUserByRawMessage');
 import 'dotenv/config'
 let prefix = process.env.PREFIX || "o!";
 
