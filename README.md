@@ -44,4 +44,4 @@ npm start
 
 
 # For Contact
-You can find me on discord <b>@weeb.js</b>
+You can find me on discord <b>@coreqt</b>
