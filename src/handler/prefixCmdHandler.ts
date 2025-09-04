@@ -16,9 +16,15 @@ module.exports = (client: _Client) => {
                 const commandFiles = fs.readdirSync(commandNamePath);
                 for(const commandFile of commandFiles){
                     const commandFilePath = path.join(commandNamePath, commandFile);
-                    const command = require(commandFilePath);
-                    prefixCommands.set(commandName, command);
-                    console.log(`✅ ${commandName}`);
+                    try{
+                        const command = require(commandFilePath);
+                        
+                        prefixCommands.set(commandName, command);
+                        
+                        console.log(`✅ ${commandName}`);
+                    }catch(error){
+                        console.log(`❌️ ${commandName}`)
+                    }
                 }
             }
         }
