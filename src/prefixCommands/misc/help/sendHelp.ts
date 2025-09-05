@@ -1,22 +1,23 @@
-import { Client, EmbedBuilder, Message } from "discord.js";
+import { ColorResolvable, EmbedBuilder, Message } from "discord.js";
 import 'dotenv/config';
+import fs from 'node:fs';
+import path from 'node:path';
 
-var fs = require('node:fs');
-var path = require('node:path');
-var prefix = process.env.PREFIX || "o!";
+const prefix = process.env.PREFIX || "o!";
+const actionsDir = path.join(__dirname, '..', '..', 'actions');
+const countingDir = path.join(__dirname, '..', '..', 'fun');
+const emotionsDir = path.join(__dirname, '..', '..', 'emotes');
+const infoDir = path.join(__dirname, '..', '..', 'info');
+const coolCommandsDir = path.join(__dirname, '..', '..', 'useful');
+const miscDir = path.join(__dirname, '..', '..', 'misc');
 
-let actionsDir = path.join(__dirname, '..', '..', 'actions');
-let countingDir = path.join(__dirname, '..', '..', 'fun');
-let emotionsDir = path.join(__dirname, '..', '..', 'emotes');
-let infoDir = path.join(__dirname, '..', '..', 'info');
-let coolCommandsDir = path.join(__dirname, '..', '..', 'useful');
-let miscDir = path.join(__dirname, '..', '..', 'misc');
-function getFileNames(dir: string) {
-    const rawActions = fs.readdirSync(dir)
-    const dirFiles = rawActions.map((element: any) => `\`${element}\``);
-    return dirFiles;
+function getFileNames(dir: string): string[] {
+    try {
+        return fs.readdirSync(dir).map((element: string) => `\`${element}\``);
+    } catch {
+        return ['(none)'];
+    }
 }
-
 
 module.exports = {
     structure: {
@@ -27,60 +28,42 @@ module.exports = {
     execute: async (message: Message, client: _Client, args: string[]) => {
         if (!message.channel.isSendable()) return;
 
-        let primaryEmbedColor: any = process.env.PRIMARY_EMBED_COLOR || "#FFC5D3";
-        let alertEmbedColor: any = process.env.ALERT_EMBED_COLOR || "#ff6347";
+        const primaryEmbedColor = process.env.PRIMARY_EMBED_COLOR as ColorResolvable || "#FFC5D3" as ColorResolvable;
+        const alertEmbedColor = process.env.ALERT_EMBED_COLOR as ColorResolvable || "#ff6347" as ColorResolvable;
+        const embed = new EmbedBuilder().setColor(primaryEmbedColor);
 
-        const Embed: EmbedBuilder = new EmbedBuilder();
-        Embed.setColor(primaryEmbedColor);
         if (args.length < 1) {
-
-            Embed.setTitle(`h-here's the list of commands and categories :3`);
-            Embed.addFields(
-                { name: 'Frequently Used', value: getFileNames(coolCommandsDir).toString(), inline: false }
-            )
-            Embed.addFields(
-                { name: 'Misc', value: getFileNames(miscDir).toString(), inline: false }
-            )
-            Embed.addFields(
-                { name: 'Emotes', value: getFileNames(emotionsDir).toString(), inline: false }
-            )
-            Embed.addFields(
-                { name: 'Actions', value: getFileNames(actionsDir).toString(), inline: false }
-            )
-            Embed.addFields(
-                { name: 'Info', value: getFileNames(infoDir).toString(), inline: false }
-            )
-            Embed.addFields(
-                { name: 'Counting Activity', value: getFileNames(countingDir).toString(), inline: false }
-            )
-            Embed.addFields({ name: '\u200B', value: '\u200B' },)
-            Embed.addFields(
+            embed.setTitle(`Here's the list of commands and categories :3`);
+            const fields = [
+                { name: 'Frequently Used', value: getFileNames(coolCommandsDir).join(", "), inline: false },
+                { name: 'Counting Activity', value: getFileNames(countingDir).join(", "), inline: false },
+                { name: 'Misc', value: getFileNames(miscDir).join(", "), inline: false },
+                { name: 'Emotes', value: getFileNames(emotionsDir).join(", "), inline: false },
+                { name: 'Actions', value: getFileNames(actionsDir).join(", "), inline: false },
+                { name: 'Info', value: getFileNames(infoDir).join(", "), inline: false },
+                { name: '\u200B', value: '\u200B' },
                 {
-                    name: `written in typescript `, value: `Help us by contributing the project on [github](https://github.com/cores-basement/osBot) *pwease~*`
+                    name: `Written in TypeScript`,
+                    value: `Help us by contributing to the project on [GitHub](https://github.com/cores-basement/osBot) *pwease~*`
                 }
-            )
-
-            Embed.setFooter({ text: `Type "${prefix}help <command>" To Get Info of That Particular command` });
-            Embed.setThumbnail("https://c.tenor.com/IaHOpRGFFNwAAAAC/tenor.gif")
-
+            ];
+            embed.addFields(fields);
+            embed.setFooter({ text: `Type "${prefix}help <command>" to get info about that command` });
+            embed.setThumbnail(process.env.HELP_THUMBNAIL || "https://c.tenor.com/IaHOpRGFFNwAAAAC/tenor.gif");
         } else {
-            const { prefixCommands } = client;
-            const command = prefixCommands.get(args.shift()?.toLowerCase());
+            const command = client.prefixCommands.get(args.shift()?.toLowerCase());
             if (!command) {
-                Embed.setColor(alertEmbedColor);
-                Embed.setTitle(`Command Not Found`);
-                Embed.setDescription(`Type ${prefix}help for list of available commands`);
+                embed.setColor(alertEmbedColor)
+                    .setTitle(`Command Not Found`)
+                    .setDescription(`Type ${prefix}help for a list of available commands`);
             } else {
-
-                Embed.setTitle(`**${command.structure.name}**`);
-                Embed.addFields(
-                    { name: 'Description:', value: `\`\`\`${command.structure.description}\`\`\`` }
-                );
-                Embed.addFields(
-                    { name: 'Usage:', value: `\`\`\`${command.structure.usage}\`\`\`` }
-                );
+                embed.setTitle(`**${command.structure.name}**`)
+                    .addFields(
+                        { name: 'Description:', value: `\`\`\`${command.structure.description}\`\`\`` },
+                        { name: 'Usage:', value: `\`\`\`${command.structure.usage}\`\`\`` }
+                    );
             }
         }
-        message.channel.send({ embeds: [Embed] });
+        message.channel.send({ embeds: [embed] });
     }
 }
