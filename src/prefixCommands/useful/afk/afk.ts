@@ -112,11 +112,14 @@ module.exports = {
         }
 
         let name: string | null
+
+        name = message.author.username;
+
         if (message.author.globalName) {
             name = message.author.globalName;
-        } else {
-            name = message.author.username;
         }
+
+        
         let msgString = `<@${message.author.id}> Marked you as AFK${_reason ? `: ${_reason}` : ""}`;
 
         try {
