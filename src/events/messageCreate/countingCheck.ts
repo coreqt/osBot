@@ -90,8 +90,12 @@ async function processCorrectNumber(message: Message, client: Client, doc: typeo
     doc.lastNumber += 1;
     doc.lastUserId = author.id;
     await doc.save();
-
-    await message.channel.setTopic(`Counting Channel By ${client.user.tag} bot. next number is ${doc.lastNumber + 1}`);
+    
+    try {
+        message.channel.setTopic(`**Counting Channel By ${client.user.tag} bot. next number is ${doc.lastNumber + 1}**`);
+    }catch(err: unknown){
+        // There is nothing we can do... 
+    }
     return;
 }
 
