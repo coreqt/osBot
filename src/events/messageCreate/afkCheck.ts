@@ -1,8 +1,9 @@
 // Imports
-import { EmbedBuilder, User, TimestampStyles, Message, Client, TimestampStylesString} from "discord.js";
+import { EmbedBuilder, User, TimestampStyles, Message, Client} from "discord.js";
+import { HydratedDocument } from "mongoose";
 import { errorLog } from "../../utils/sendLog";
 import 'dotenv/config';
-import afkModel from "../../model/afkModel";
+import {afkModel, PingedBy, Iafk} from "../../model/afkModel";
 import unixToRelativeTime from "../../utils/unixToRelativeTime";
 
 var getUserById = require('../../utils/getUserById');
@@ -209,7 +210,7 @@ async function afkCheckOnRepliedMessage(message: Message): Promise<void> {
     return;
 }
 
-async function setDefaultUserName(message: Message, queryResult: AfkDoc, client: Client,): Promise<void> {
+async function setDefaultUserName(message: Message, queryResult: HydratedDocument<Iafk>, client: Client,): Promise<void> {
     if (!message || !message.guild || !message.channel.isSendable()) return;
 
     const guildMembers = message.guild.members;

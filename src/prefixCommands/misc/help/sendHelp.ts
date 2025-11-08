@@ -5,7 +5,7 @@ import path from 'node:path';
 
 const prefix = process.env.PREFIX || "o!";
 const actionsDir = path.join(__dirname, '..', '..', 'actions');
-const countingDir = path.join(__dirname, '..', '..', 'fun');
+const countingDir = path.join(__dirname, '..', '..', 'counting');
 const emotionsDir = path.join(__dirname, '..', '..', 'emotes');
 const infoDir = path.join(__dirname, '..', '..', 'info');
 const coolCommandsDir = path.join(__dirname, '..', '..', 'useful');

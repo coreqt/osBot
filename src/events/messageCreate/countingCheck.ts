@@ -1,10 +1,11 @@
-import { Message, Client, Webhook, TextChannel, ChannelType, NewsChannel, ClientUser } from "discord.js";
+import { Message, Client, Webhook, TextChannel, NewsChannel, ClientUser } from "discord.js";
 import { evaluate } from "mathjs";
+import {countingModel, Icounting } from "../../model/countingModel";  
 import 'dotenv/config';
+import { Model, Document, HydratedDocument } from "mongoose";
 
 var { WebhookClient } = require('discord.js');
 var guildModel = require('../../model/guildModel');
-var countingDoc = require('../../model/countingModel');
 var prefix = process.env.PREFIX || 'o!';
 
 module.exports = {
@@ -15,7 +16,7 @@ module.exports = {
         const guildId = guild.id;
         const channelId = channel.id;
 
-        let queryResult = await countingDoc.findOne({ guildId });
+        let queryResult = await countingModel.findOne({ guildId });
 
         if (!queryResult || channelId !== queryResult.channelId) return;
 
@@ -58,8 +59,8 @@ async function warn(message: Message, warningMessage: string): Promise<void> {
 }
 
 
-async function processCorrectNumber(message: Message, client: Client, doc: typeof countingDoc): Promise<void> {
-    if (!client.user ||message.channel.isDMBased() || !message.channel.isSendable() || !message.channel.isTextBased() || message.channel.isVoiceBased() || message.channel.isThread()) return;
+async function processCorrectNumber(message: Message, client: Client, countingDoc: HydratedDocument<Icounting>): Promise<void> {
+    if (!client.user || message.channel.isDMBased() || !message.channel.isSendable() || !message.channel.isTextBased() || message.channel.isVoiceBased() || message.channel.isThread()) return;
     const { author, channel, content, member } = message;
     const bot = client.user;
 
@@ -77,23 +78,23 @@ async function processCorrectNumber(message: Message, client: Client, doc: typeo
     }
 
     let displayName = author.globalName;
-    if(member?.nickname){
+    if (member?.nickname) {
         displayName = member.nickname;
     }
 
     await webhook.send({
         content,
-        username: displayName ? `${displayName} (${author.username})` :  `${author.username}`,
+        username: displayName ? `${displayName} (${author.username})` : `${author.username}`,
         avatarURL: author.displayAvatarURL({ forceStatic: false, extension: "png" }),
     });
-
-    doc.lastNumber += 1;
-    doc.lastUserId = author.id;
-    await doc.save();
     
+    countingDoc.lastNumber += 1;
+    countingDoc.lastUserId = author.id;
+    await countingDoc.save();
+
     try {
-        message.channel.setTopic(`**Counting Channel By ${client.user.tag} bot. next number is ${doc.lastNumber + 1}**`);
-    }catch(err: unknown){
+        message.channel.setTopic(`**Counting Channel By ${client.user.tag} bot. next number is ${countingDoc.lastNumber + 1}**`);
+    } catch (err: unknown) {
         // There is nothing we can do... 
     }
     return;

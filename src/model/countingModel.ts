@@ -1,19 +1,29 @@
-var mongoose = require('mongoose');
+// var mongoose = require('mongoose');
+import { Schema, model } from 'mongoose';
 
-const countingSchema = new mongoose.Schema({
+
+export interface Icounting {
+    guildId: string;
+    channelId: string;
+    lastNumber: number;
+    lastUserId: string | "00000000000000";
+    numbersOnly: boolean;
+}
+
+const countingSchema = new Schema<Icounting>({
     guildId: {
         type: String,
-        required: [true]
+        required: [true, 'guildId is Required']
     },
     channelId: {
         type: String,
-        required: [true]
+        required: [true, 'channelId is Required']
     },
     lastNumber: {
         type: Number,
         default: 0
     },
-    lastUserId:{
+    lastUserId: {
         type: String,
         default: "00000000000000"
     },
@@ -23,5 +33,4 @@ const countingSchema = new mongoose.Schema({
     }
 });
 
-var countingModel = mongoose.model('countingModel', countingSchema);
-module.exports = countingModel; 
+export const countingModel = model('countingModel', countingSchema);

@@ -1,6 +1,6 @@
 import { Message, EmbedBuilder, TimestampStyles, Client, PermissionsBitField } from "discord.js";
 import 'dotenv/config';
-import afkModel from "../../../model/afkModel";
+import {afkModel, Iafk, PingedBy} from "../../../model/afkModel";
 
 var prefix = process.env.PREFIX || "o!";
 

@@ -37,7 +37,7 @@ module.exports = {
         const ServerEmbed = new EmbedBuilder()
             .setColor('#2B2D31')
             .setTitle(`${user.globalName ?? 'Unknown'} - User info`)
-            .setThumbnail(user.displayAvatarURL({ size: 256 }))
+            .setThumbnail(user.displayAvatarURL({ size: 4096, extension: 'png', forceStatic: false }))
             .addFields(
                 { name: 'User Name', value: user.username, inline: true },
                 { name: 'Global Name', value: user.globalName ?? 'Unknown', inline: true },

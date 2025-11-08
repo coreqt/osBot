@@ -24,23 +24,4 @@ declare global {
     }
 
 
-
-    interface AfkDoc {
-        userId: string;
-        reason: string | undefined;
-        afkStartTime: number | 0;
-        pingedBy: Array<PingedBy>
-        hasChangedNick: boolean;
-        oldGuildNickname: string | null;
-        afkGuildId: string;
-    }
-
-    interface PingedBy {
-        username: Snowflake;
-        channelId: Snowflake;
-        messageId: Snowflake;
-        timestamp: number
-    }
-
-
 }

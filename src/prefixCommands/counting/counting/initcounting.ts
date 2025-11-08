@@ -1,8 +1,9 @@
 import { ChannelType, Client, Message } from "discord.js";
 import 'dotenv/config'
+import {countingModel} from "../../../model/countingModel";
 let prefix = process.env.PREFIX || "o!";
 
-var countingDoc = require('../../../model/countingModel');
+
 var guildModel = require('../../../model/guildModel');
 
 enum Option {
@@ -56,13 +57,13 @@ module.exports = {
         let channelId = message.channel.id;
 
         if (option === 0) {
-            let oldDoc = await countingDoc.findOne({ guildId });
+            let oldDoc = await countingModel.findOne({ guildId });
             if (oldDoc) {
                 message.reply(`Counting is already enabled in this channel.`);
                 return;
             }
 
-            let newDoc = new countingDoc({
+            let newDoc = new countingModel({
                 guildId,
                 channelId,
             });
@@ -75,7 +76,7 @@ module.exports = {
             await createAndStoreWebhook(message.channel, bot);
 
         } else if (option === 1) {
-            let oldDoc = await countingDoc.findOne({ guildId });
+            let oldDoc = await countingModel.findOne({ guildId });
             if (!oldDoc) {
                 message.reply(`Counting is already disabled in this channel.`);
                 return;
@@ -83,7 +84,7 @@ module.exports = {
 
             await message.channel.setTopic("");
             message.channel.send('Disabled counting activity in this server!');
-            await countingDoc.deleteMany({ guildId });
+            await countingModel.deleteMany({ guildId });
 
             await guildModel.findOneAndUpdate(
                 { guildId },
