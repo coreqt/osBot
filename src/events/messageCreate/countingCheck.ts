@@ -2,10 +2,10 @@ import { Message, Client, Webhook, TextChannel, NewsChannel, ClientUser } from "
 import { evaluate } from "mathjs";
 import {countingModel, Icounting } from "../../model/countingModel";  
 import 'dotenv/config';
-import { Model, Document, HydratedDocument } from "mongoose";
+import {HydratedDocument } from "mongoose";
+import { guildModel } from "../../model/guildModel";
 
 var { WebhookClient } = require('discord.js');
-var guildModel = require('../../model/guildModel');
 var prefix = process.env.PREFIX || 'o!';
 
 module.exports = {

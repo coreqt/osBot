@@ -9,7 +9,8 @@ import {
 } from "discord.js";
 import "dotenv/config";
 
-var guildDoc = require("../../model/guildModel");
+import { guildModel } from "../../model/guildModel";
+// var guildModel = require("../../model/guildModel");
 var userDoc = require("../../model/userModel");
 
 const cooldowns = new Map();
@@ -77,14 +78,14 @@ module.exports = {
             userData = await userDoc.findOne({ userId: messageUserId });
         }
 
-        var guildData: any = await guildDoc.findOne({ guildId: guildId });
+        var guildData: any = await guildModel.findOne({ guildId: guildId });
         if (!guildData) {
-            const _guildData = new guildDoc({
+            const _guildData = new guildModel({
                 guildId: guildId,
                 customPrefixes: [],
             });
             await _guildData.save();
-            guildData = await guildDoc.findOne({ guildId: guildId });
+            guildData = await guildModel.findOne({ guildId: guildId });
         }
         if (!Array.isArray(userData?.customPrefixes)) {
             userData.customPrefixes = [];

@@ -8,8 +8,8 @@ var guildModel = require('../../../model/guildModel');
 
 enum Option {
     null = -1,
-    on,
-    off,
+    off, // 0
+    on, // 1
 }
 
 
@@ -36,7 +36,7 @@ module.exports = {
 
         const permissions = message.channel.permissionsFor(client.user.id);
         if (!permissions || !permissions.has("ManageWebhooks")) {
-            message.channel.send(`❌ I don't have permissions to manage webhooks!`);
+            message.channel.send(`I don't have permissions to manage webhooks!`);
             return;
         }
 
@@ -56,7 +56,7 @@ module.exports = {
         let guildId = message.guild.id;
         let channelId = message.channel.id;
 
-        if (option === 0) {
+        if (option === 1) { // option = 1 = on
             let oldDoc = await countingModel.findOne({ guildId });
             if (oldDoc) {
                 message.reply(`Counting is already enabled in this channel.`);
@@ -68,14 +68,14 @@ module.exports = {
                 channelId,
             });
 
-            await message.channel.setTopic(`Count to your heart's content! by OS Bot! [Admins] To disable it type "${prefix}counting disable", next number is 1`);
+            await message.channel.setTopic(`Counting activity by OS Bot!, next number is 1`);
             message.channel.send(`Enabled counting activity in this server. Enjoy!`);
             await newDoc.save();
 
             const bot = client.user;
             await createAndStoreWebhook(message.channel, bot);
-
-        } else if (option === 1) {
+            
+        } else if (option === 0) {
             let oldDoc = await countingModel.findOne({ guildId });
             if (!oldDoc) {
                 message.reply(`Counting is already disabled in this channel.`);

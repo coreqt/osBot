@@ -1,6 +1,26 @@
-var mongoose = require('mongoose');
+// var mongoose = require('mongoose');
+import { Schema, model } from 'mongoose';
 
-const guildSchema = new mongoose.Schema({
+
+export interface Iguild {
+    guildId: string;
+    customPrefixes: [{
+        prefix: string,
+        addedOn: Date
+    }] | []
+    webhook: {
+        id: string,
+        token: string
+    }
+    bump: {
+        channelId: string,
+        pingRoleIds: [],
+        lastbumped: Date
+    }
+}
+
+
+const guildSchema = new Schema<Iguild>({
     guildId: {
         type: String,
         required: true
@@ -20,5 +40,4 @@ const guildSchema = new mongoose.Schema({
     }
 });
 
-var guildModel = mongoose.model('guildModel', guildSchema);
-module.exports = guildModel;
+export const guildModel = model('guildModel', guildSchema);
