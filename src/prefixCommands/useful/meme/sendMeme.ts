@@ -1,5 +1,5 @@
 import { Message, ChannelType, EmbedBuilder } from "discord.js";
-import { errorLog } from "../../../utils/sendLog";
+import { errorLog } from "../../../utils/sendErrorLog";
 import 'dotenv/config';
 
 var prefix: string = process.env.PREFIX || "o!";

@@ -1,7 +1,7 @@
 // Imports
 import { EmbedBuilder, User, TimestampStyles, Message, Client} from "discord.js";
 import { HydratedDocument } from "mongoose";
-import { errorLog } from "../../utils/sendLog";
+import { errorLog } from "../../utils/sendErrorLog";
 import 'dotenv/config';
 import {afkModel, PingedBy, Iafk} from "../../model/afkModel";
 import unixToRelativeTime from "../../utils/unixToRelativeTime";

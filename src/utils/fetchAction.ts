@@ -1,4 +1,4 @@
-import { errorLog } from "./sendLog";
+import { errorLog } from "./sendErrorLog";
 
 module.exports = {
     fetchAction: async (endpoint: string): Promise<object> => {

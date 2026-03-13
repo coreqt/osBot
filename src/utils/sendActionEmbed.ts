@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { errorLog } from "./sendLog";
+import { errorLog } from "./sendErrorLog";
 import 'dotenv/config';
 
 var { EmbedBuilder } = require('discord.js');
