@@ -23,14 +23,14 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node dist/index.js",
-    "build": "npm i && tsc",
+    "start": "npx tsx ./src/index.ts",
+    "build": "npm install -D tsx",
     "dev": "concurrently \"tsc --watch\" \"nodemon dist/index.js -e ts,json\"",
     "buildStructure": "tree >> structure.txt --filesfirst -F --gitignore"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/anuj-weebjs/osBot.git"
+    "url": "git+https://github.com/coreqt/osBot.git"
   },
   "keywords": [
     "discord",
@@ -38,10 +38,10 @@
     "prefix-bot",
     "afk-bot"
   ],
-  "author": "@weeb.js",
+  "author": "@coreqt",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/anuj-weebjs/osBot/issues"
+    "url": "https://github.com/coreqt/osBot/issues"
   },
-  "homepage": "https://github.com/anuj-weebjs/osBot#readme"
+  "homepage": "https://github.com/coreqt/osBot#readme"
 }
