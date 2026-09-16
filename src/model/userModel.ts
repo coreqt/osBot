@@ -1,13 +1,25 @@
-var mongoose = require('mongoose');
+import { Schema, model } from 'mongoose';
 
-const userSchema = new mongoose.Schema({
+interface CustomPrefixes {
+    prefix: string;
+    addedOn: Date;
+}
+
+export interface Iuser{
+    userId: string;
+    joinedAt: number;
+    customPrefixes: CustomPrefixes[];
+    lastUsedPrefix: string;
+}
+
+const userSchema = new Schema<Iuser>({
     userId: {
         type: String,
-        required: [true]
+        required: [true, "userId is required"]
     },
     joinedAt: {
-        type: Date,
-        required: [true]
+        type: Number,
+        required: [true, "JoinedAt is required"]
     },
     customPrefixes: {
         type: [{ prefix: String, addedOn: Date }],
@@ -18,5 +30,4 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-var userModel = mongoose.model('userModel', userSchema);
-module.exports = userModel; 
+export const userModel = model<Iuser>("userModel", userSchema);

@@ -10,8 +10,7 @@ import {
 import "dotenv/config";
 
 import { guildModel } from "../../model/guildModel";
-// var guildModel = require("../../model/guildModel");
-var userDoc = require("../../model/userModel");
+import { userModel } from "../../model/userModel"; 
 
 const cooldowns = new Map();
 module.exports = {
@@ -66,16 +65,16 @@ module.exports = {
         }
 
         var messageUserId = authorId;
-        var userData = await userDoc.findOne({ userId: messageUserId });
+        var userData = await userModel.findOne({ userId: messageUserId });
 
         if (!userData) {
-            const _userData = new userDoc({
+            const _userData = new userModel({
                 userId: authorId,
                 joinedAt: new Date(),
                 customPrefixes: [],
             });
             await _userData.save();
-            userData = await userDoc.findOne({ userId: messageUserId });
+            userData = await userModel.findOne({ userId: messageUserId });
         }
 
         var guildData: any = await guildModel.findOne({ guildId: guildId });
@@ -88,6 +87,9 @@ module.exports = {
             guildData = await guildModel.findOne({ guildId: guildId });
         }
         if (!Array.isArray(userData?.customPrefixes)) {
+            if(!userData){
+                throw new Error("User Data doesnt exist");
+            }
             userData.customPrefixes = [];
         }
 
