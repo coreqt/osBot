@@ -1,21 +1,22 @@
 {
   "dependencies": {
-    "date-fns": "^4.1.0",
-    "discord.js": "^14.15.3",
-    "dotenv": "^16.4.5",
+    "date-fns": "^4.4.0",
+    "discord.js": "^14.27.0",
+    "dotenv": "^17.4.2",
     "encodeurl": "^2.0.0",
-    "express": "^4.21.2",
-    "mathjs": "^13.0.3",
-    "mongodb": "^6.8.0",
-    "mongoose": "^8.5.1"
+    "express": "^5.2.1",
+    "mathjs": "^15.2.0",
+    "mongodb": "^7.6.0",
+    "mongoose": "^9.10.1",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
-    "@types/express": "^5.0.1",
-    "@types/node": "^20.14.12",
-    "concurrently": "^9.1.2",
-    "nodemon": "^3.1.4",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.20.3",
+    "concurrently": "^10.0.5",
+    "nodemon": "^3.1.14",
     "tsx": "^4.23.13",
-    "typescript": "^5.8.3"
+    "typescript": "^7.0.2"
   },
   "name": "osbot",
   "description": "<b>It is a prefix based Discord Bot Created in Node.js</b>",
@@ -43,5 +44,8 @@
   "bugs": {
     "url": "https://github.com/coreqt/osBot/issues"
   },
-  "homepage": "https://github.com/coreqt/osBot#readme"
+  "homepage": "https://github.com/coreqt/osBot#readme",
+  "allowScripts": {
+    "esbuild": true
+  }
 }
