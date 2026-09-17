@@ -26,7 +26,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx tsx ./src/index.ts",
     "build": "npm install -D tsx",
-    "dev": "concurrently \"tsc --watch\" \"nodemon dist/index.js -e ts,json\"",
+    "dev": "nodemon --exec \"npx tsx ./src/index.ts\" -e ts,json\"",
     "buildStructure": "tree >> structure.txt --filesfirst -F --gitignore"
   },
   "repository": {
