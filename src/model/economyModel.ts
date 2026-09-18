@@ -1,8 +1,27 @@
-var mongoose = require('mongoose');
+// var mongoose = require('mongoose');
+import { Snowflake } from "discord.js";
+import { number } from "mathjs";
+import {Schema, model} from "mongoose"
 
-const economySchema = new mongoose.Schema({
+
+export interface Ieconomy{
+    userId: Snowflake;
+    xp: number;
+    moneyInPocketCount: number;
+    moneyInBankCount: number;
+    bankInterest: number;
+    lastDepositeDate: number;
+    currentJob: string;
+    jobLevel: number;
+    jobSalary: number;
+    lastWorkShift: number;
+    isCollectedDaily: boolean;
+}
+
+
+const economySchema = new Schema<Ieconomy>({
     userId: {
-        type: String, required: [true]
+        type: String, required: [true, "userId is required"]
     },
     xp: {
         type: Number,
@@ -21,7 +40,7 @@ const economySchema = new mongoose.Schema({
         default: 2
     },
     lastDepositeDate: {
-        type: String,
+        type: Number,
         default: 0,
     },
 
@@ -38,7 +57,7 @@ const economySchema = new mongoose.Schema({
         default: 750,
     },
     lastWorkShift: {
-        type: String,
+        type: Number,
         default: 0
     },
     isCollectedDaily: {
@@ -47,5 +66,4 @@ const economySchema = new mongoose.Schema({
     },
 });
 
-var economyModel = mongoose.model('economyModel', economySchema);
-module.exports = economyModel; 
+export const economyModel = model<Ieconomy>('economyModel', economySchema);
