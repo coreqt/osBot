@@ -3,9 +3,10 @@
  It is written in Typescript, intentionally made to solve day to day problems with the help of apis and database integration. 
 
 
-# Setting up Locally
+# Running the bot
 <p><b>Node.js is nessesory to run The bot</b></p>
 
+## Basic setup
 - Star this repo
 - Download or clone this repo to your local machine
 - Open osBot folder that you've just cloned on your pc
@@ -31,12 +32,18 @@ INVISIBLE_EMBED_COLOR=
 ALERT_EMBED_COLOR=
 ``` 
 - <b>NOTE: </b>You need a enable Server Members Intent & Message Content Intent in order to bot work!
+## 1. Running with Docker
+```
+docker build -t osbot .
+docker run -d --env-file .env -p 3000:3000 osbot
+```
+## 2. Running with Node.js 
 - Now open terminal in osBot folder and type following commands To install Dependencies and Make a Build.
-```terminal
+```bash
 npm run build
 ```
 - And Finally Startup The Bot By typing following command in your terminal
-```terminal
+```bash
 npm start
 ```
 - And all set!
@@ -44,4 +51,4 @@ npm start
 
 
 # For Contact
-You can find me on discord <b>@coreqt</b>
+You can find me on our <b>[discord server](https://discord.gg/QZZKRQVv6c)</b>
