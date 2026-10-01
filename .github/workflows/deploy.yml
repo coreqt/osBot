@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: debian-13
+    runs-on: ubuntu-latest
 
     steps:
       - name: Deploy to VPS
